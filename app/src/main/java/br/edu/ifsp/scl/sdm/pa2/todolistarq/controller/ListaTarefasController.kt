@@ -36,4 +36,35 @@ class ListaTarefasController(private val listaTarefasFragment: ListaTarefasFragm
             }
         }.execute()
     }
+
+    fun removerTarefa(tarefa: Tarefa){
+        val listaTarefas = mutableListOf<Tarefa>()
+        object: AsyncTask<Tarefa, Unit, List<Tarefa>>(){
+            override fun onPreExecute() {
+                super.onPreExecute()
+            }
+
+            override fun doInBackground(vararg params: Tarefa?): List<Tarefa>? {
+
+                params?.forEach { tarefaParams ->
+                    if (tarefaParams != null) {
+                        if (tarefaParams.id == tarefa.id){
+                            database.getTarefaDao().removerTarefa(tarefa)
+                        }
+                    }
+                }
+                return database.getTarefaDao().recuperarTarefas()
+            }
+
+            override fun onPostExecute(result: List<Tarefa>?) {
+                super.onPostExecute(result)
+                result?.forEach{ tarefaParams ->
+                    if (tarefaParams.id != tarefa.id){
+                        listaTarefas.add(tarefaParams)
+                    }
+                }
+                listaTarefasFragment.atualizarListaTarefas(listaTarefas)
+            }
+        }.execute(tarefa)
+    }
 }

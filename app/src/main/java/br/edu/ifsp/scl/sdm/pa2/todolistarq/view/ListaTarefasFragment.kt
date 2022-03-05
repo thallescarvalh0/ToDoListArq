@@ -86,11 +86,10 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
                 true
             }
             R.id.removerTarefaMi -> {
-                //todo Remove do banco de dados, 1.exercicio a a fazer
-
-                // Remove da lista de tarefas
-                tarefasList.removeAt(posicao)
-                tarefasAdapter.notifyDataSetChanged()
+                listaTarefasController.removerTarefa(tarefasList[posicao])
+//                // Remove da lista de tarefas
+//                tarefasList.removeAt(posicao)
+//                tarefasAdapter.notifyDataSetChanged()
                 true
             }
             else -> false
@@ -119,6 +118,7 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
         tarefasList.addAll(listaTarefas)
         tarefasAdapter.notifyDataSetChanged()
 
-        //todo perguntar se alguma outra metodologia de desenvolvimento seria mais eficaz, sem ter esse acoplamento
+        //todo perguntar se alguma outra metodologia de desenvolvimento seria mais eficaz, sem ter esse acoplamento SOLID? CLean code?
     }
+
 }
