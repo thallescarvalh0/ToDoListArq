@@ -1,5 +1,6 @@
 package br.edu.ifsp.scl.sdm.pa2.todolistarq.view
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -8,8 +9,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.commit
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.R
+import br.edu.ifsp.scl.sdm.pa2.todolistarq.controller.ListaTarefasController
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.databinding.FragmentListaTarefasBinding
+import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.database.ToDoListArqDatabase
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.entity.Tarefa
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.ACAO_TAREFA_EXTRA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.CONSULTA
@@ -22,16 +26,16 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
     private lateinit var fragmentListaTarefasBinding: FragmentListaTarefasBinding
     private lateinit var tarefasList: MutableList<Tarefa>
     private lateinit var tarefasAdapter: TarefasAdapter
+    private lateinit var listaTarefasController: ListaTarefasController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        listaTarefasController = ListaTarefasController(this)
         // Buscar tarefas no banco de dados
         tarefasList = mutableListOf()
-        // Por enquanto simulamos a busca com alguns objetos
-        for (i in 0..10) {
-            tarefasList.add(Tarefa(i, "Tarefa $i", i % 2))
-        }
+
+        listaTarefasController.buscarTarefas()
 
         setFragmentResultListener(TAREFA_REQUEST_KEY) { chave, resultados ->
             val tarefaExtra = resultados.getParcelable<Tarefa>(TAREFA_EXTRA)
@@ -82,7 +86,7 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
                 true
             }
             R.id.removerTarefaMi -> {
-                // Remove do banco de dados
+                //todo Remove do banco de dados, 1.exercicio a a fazer
 
                 // Remove da lista de tarefas
                 tarefasList.removeAt(posicao)
@@ -109,5 +113,12 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
             addToBackStack("TarefaFragment")
             replace(R.id.principalFcv, tarefaFragment)
         }
+    }
+    fun atualizarListaTarefas(listaTarefas: MutableList<Tarefa>){
+        tarefasList.clear()
+        tarefasList.addAll(listaTarefas)
+        tarefasAdapter.notifyDataSetChanged()
+
+        //todo perguntar se alguma outra metodologia de desenvolvimento seria mais eficaz, sem ter esse acoplamento
     }
 }
