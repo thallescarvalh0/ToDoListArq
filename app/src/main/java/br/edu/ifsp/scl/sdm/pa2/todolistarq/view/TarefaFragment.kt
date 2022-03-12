@@ -1,6 +1,5 @@
 package br.edu.ifsp.scl.sdm.pa2.todolistarq.view
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,6 @@ import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.CONSULTA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.TAREFA_EXTRA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.TAREFA_REQUEST_KEY
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.nio.channels.AsynchronousByteChannel
 
 class TarefaFragment : BaseFragment() {
     private lateinit var fragmentTarefaBinding: FragmentTarefaBinding
