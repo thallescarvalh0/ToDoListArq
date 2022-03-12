@@ -32,10 +32,7 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
         super.onCreate(savedInstanceState)
 
         listaTarefasController = ListaTarefasController(this)
-        // Buscar tarefas no banco de dados
-        tarefasList = mutableListOf()
 
-        listaTarefasController.buscarTarefas()
 
         setFragmentResultListener(TAREFA_REQUEST_KEY) { chave, resultados ->
             val tarefaExtra = resultados.getParcelable<Tarefa>(TAREFA_EXTRA)
@@ -62,11 +59,15 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
         savedInstanceState: Bundle?
     ): View {
         fragmentListaTarefasBinding = FragmentListaTarefasBinding.inflate(inflater, container, false)
+        // Buscar tarefas no banco de dados
 
+        tarefasList = mutableListOf()
         tarefasAdapter = TarefasAdapter(this, tarefasList)
         val tarefasLayoutManager = LinearLayoutManager(activity)
         fragmentListaTarefasBinding.tarefasRv.adapter = tarefasAdapter
         fragmentListaTarefasBinding.tarefasRv.layoutManager = tarefasLayoutManager
+
+        listaTarefasController.buscarTarefas()
 
         return fragmentListaTarefasBinding.root
     }
@@ -88,8 +89,8 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
             R.id.removerTarefaMi -> {
                 listaTarefasController.removerTarefa(tarefasList[posicao])
 //                // Remove da lista de tarefas
-//                tarefasList.removeAt(posicao)
-//                tarefasAdapter.notifyDataSetChanged()
+                tarefasList.removeAt(posicao)
+                tarefasAdapter.notifyDataSetChanged()
                 true
             }
             else -> false
