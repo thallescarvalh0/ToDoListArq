@@ -130,7 +130,6 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
         tarefasList.addAll(listaTarefas)
         tarefasAdapter.notifyDataSetChanged()
 
-        //todo perguntar se alguma outra metodologia de desenvolvimento seria mais eficaz, sem ter esse acoplamento SOLID? CLean code?
     }
 
 }
