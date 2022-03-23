@@ -13,7 +13,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class TarefaViewModel(application: Application): AndroidViewModel(application) {
-    /*private val database: ToDoListArqDatabase
+    /*private val database: ToDoListArqDatabase // a requisição é feita agora no buscarTarefaService
     init {
            database = Room.databaseBuilder(
                application.baseContext,
