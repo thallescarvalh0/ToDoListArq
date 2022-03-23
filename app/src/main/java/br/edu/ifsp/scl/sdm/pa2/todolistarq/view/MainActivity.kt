@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.R
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.databinding.ActivityMainBinding
-import br.edu.ifsp.scl.sdm.pa2.todolistarq.service.BuscarTarefaService
+import br.edu.ifsp.scl.sdm.pa2.todolistarq.service.TarefaService
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private val lifeTimeServiceIntent: Intent by lazy{
         //Intent(this, LifeTimeStartedService::class.java)
-        Intent(this, BuscarTarefaService::class.java)
+        Intent(this, TarefaService::class.java)
 
     }
     override fun onCreate(savedInstanceState: Bundle?) {

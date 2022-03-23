@@ -8,7 +8,7 @@ import androidx.room.Room
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.database.ToDoListArqDatabase
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.entity.Tarefa
 
-class BuscarTarefaService : Service() {
+class TarefaService : Service() {
     private lateinit var database: ToDoListArqDatabase
 
     companion object {
