@@ -14,11 +14,6 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val lifeTimeServiceIntent: Intent by lazy{
-        //Intent(this, LifeTimeStartedService::class.java)
-        Intent(this, TarefaService::class.java)
-
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityMainBinding.root)
