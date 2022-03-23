@@ -1,23 +1,39 @@
 package br.edu.ifsp.scl.sdm.pa2.todolistarq.viewmodel
 
 import android.app.Application
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.database.ToDoListArqDatabase
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.entity.Tarefa
+import br.edu.ifsp.scl.sdm.pa2.todolistarq.service.BuscarTarefaService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class TarefaViewModel(application: Application): AndroidViewModel(application) {
-    private val database: ToDoListArqDatabase
+    /*private val database: ToDoListArqDatabase
     init {
-        database = Room.databaseBuilder(
-            application.baseContext,
-            ToDoListArqDatabase::class.java,
-            ToDoListArqDatabase.Constantes.DB_NAME
-        ).build()
+           database = Room.databaseBuilder(
+               application.baseContext,
+               ToDoListArqDatabase::class.java,
+               ToDoListArqDatabase.Constantes.DB_NAME
+           ).build()
+      }*/
+    companion object {
+        val ACTION_ATUALIZAR = "ACTION_ATUALIZAR"
+        val ACTION_INSERIR = "ACTION_INSERIR"
+        val ACTION_REMOVER = "ACTION_REMOVER"
+        val ACTION_BUSCAR = "ACTION_BUSCAR"
+
+        val EXTRA_ATUALIZAR = "ATUALIZAR"
+        val EXTRA_INSERIR = "INSERIR"
+        val EXTRA_REMOVER = "REMOVER"
+        val EXTRA_BUSCAR = "BUSCAR"
+
     }
+
     private val listaTarefasMld: MutableLiveData<MutableList<Tarefa>> = MutableLiveData()
     private val tarefaMld: MutableLiveData<Tarefa> = MutableLiveData()
 
@@ -27,43 +43,38 @@ class TarefaViewModel(application: Application): AndroidViewModel(application) {
 
     //Funçõe de acesso ao datasource
     fun atualizaTarefa(tarefa: Tarefa){
-        GlobalScope.launch {
-            database.getTarefaDao().atualizarTarefa(tarefa)
-            tarefaMld.postValue(tarefa)
-            //tarefaView.retornaTarefa(tarefa)
+        val tarefaServiceIntent = Intent(ACTION_ATUALIZAR,
+            Uri.EMPTY,
+            getApplication(), BuscarTarefaService::class.java).also {
+            it.putExtra(EXTRA_ATUALIZAR, tarefa)
         }
+        getApplication<Application>().startService(tarefaServiceIntent)
     }
 
     fun insereTarefa(tarefa: Tarefa){
-        GlobalScope.launch {
-            database.getTarefaDao().inserirTarefa(tarefa)
-            tarefaMld.postValue(
-                Tarefa(
-                tarefa.id,
-                tarefa.nome,
-                tarefa.realizada
-            ))
-            /*tarefaView.retornaTarefa(
-                Tarefa(
-                    tarefa.id,
-                    tarefa.nome,
-                    tarefa.realizada
-                )
-            )*/
+        val tarefaServiceIntent = Intent(ACTION_INSERIR,
+            Uri.EMPTY,
+            getApplication(), BuscarTarefaService::class.java).also {
+            it.putExtra(EXTRA_INSERIR, tarefa)
         }
+        getApplication<Application>().startService(tarefaServiceIntent)
     }
 
     fun buscarTarefas() {
-        GlobalScope.launch {
-            val listaTarefas = database.getTarefaDao().recuperarTarefas()
-            listaTarefasMld.postValue(listaTarefas.toMutableList())
-            //tarefaView.atualizarListaTarefas(listaTarefas.toMutableList())
-        }
+        val tarefaServiceIntent = Intent(ACTION_BUSCAR,
+            Uri.EMPTY,
+            getApplication(),
+            BuscarTarefaService::class.java)
+        getApplication<Application>().startService(tarefaServiceIntent)
     }
 
     fun removerTarefa(tarefa: Tarefa){
-        GlobalScope.launch {
-            database.getTarefaDao().removerTarefa(tarefa)
+        val tarefaServiceIntent = Intent(ACTION_REMOVER,
+            Uri.EMPTY,
+            getApplication(),
+            BuscarTarefaService::class.java).also {
+                it.putExtra(EXTRA_REMOVER, tarefa)
         }
+        getApplication<Application>().startService(tarefaServiceIntent)
     }
 }

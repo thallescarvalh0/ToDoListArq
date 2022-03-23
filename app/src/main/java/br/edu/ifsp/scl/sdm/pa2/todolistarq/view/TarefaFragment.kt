@@ -1,14 +1,18 @@
 package br.edu.ifsp.scl.sdm.pa2.todolistarq.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.R
-import br.edu.ifsp.scl.sdm.pa2.todolistarq.controller.TarefaFragmentController
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.databinding.FragmentTarefaBinding
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.database.ToDoListArqDatabase
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.entity.Tarefa
@@ -16,6 +20,7 @@ import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.ACAO_TAR
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.CONSULTA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.TAREFA_EXTRA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.TAREFA_REQUEST_KEY
+import br.edu.ifsp.scl.sdm.pa2.todolistarq.viewmodel.TarefaViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class TarefaFragment : BaseFragment() {
@@ -23,12 +28,25 @@ class TarefaFragment : BaseFragment() {
     val ID_INEXISTENTE = -1L
     private var tarefaExtraId: Long = ID_INEXISTENTE
     private lateinit var database: ToDoListArqDatabase
-    private lateinit var tarefaFragmentController: TarefaFragmentController
+    private lateinit var tarefaFragmentController: TarefaViewModel
 
     private var fab: FloatingActionButton? = null
+
+    companion object {
+        val ACTION_ATUALIZAR = "ACTION_ATUALIZAR"
+        val ACTION_INSERIR = "ACTION_INSERIR"
+
+        val EXTRA_ATUALIZAR = "ATUALIZAR"
+        val EXTRA_INSERIR = "INSERIR"
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tarefaFragmentController = TarefaFragmentController(this)
+        //tarefaFragmentController = TarefaFragmentController(this)
+        tarefaFragmentController = ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+            .create(TarefaViewModel::class.java)
+
         // Escondendo botão de adicionar tarefa
         fab = activity?.findViewById(R.id.novaTarefaFab)
         fab?.visibility = GONE
@@ -99,5 +117,34 @@ class TarefaFragment : BaseFragment() {
             it.putParcelable(TAREFA_EXTRA, tarefa)
         })
         activity?.supportFragmentManager?.popBackStack()
+    }
+
+    private val receiveInserirTarefasBr: BroadcastReceiver by lazy {
+        object: BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val bundle = intent?.extras
+                val tarefa = bundle?.getParcelable<Tarefa>(EXTRA_INSERIR)
+                retornaTarefa(tarefa!!)
+            }
+        }
+    }
+
+    private val receiveAtualizarTarefasBr: BroadcastReceiver by lazy {
+        object: BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val bundle = intent?.extras
+                val tarefa = bundle?.getParcelable<Tarefa>(EXTRA_ATUALIZAR)
+                retornaTarefa(tarefa!!)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().registerReceiver(receiveInserirTarefasBr, IntentFilter(
+            ACTION_INSERIR))
+
+        requireActivity().registerReceiver(receiveAtualizarTarefasBr, IntentFilter(
+            ACTION_ATUALIZAR))
     }
 }

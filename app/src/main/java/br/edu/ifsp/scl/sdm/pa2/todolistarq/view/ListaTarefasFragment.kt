@@ -1,5 +1,9 @@
 package br.edu.ifsp.scl.sdm.pa2.todolistarq.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +14,9 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Room
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.R
-import br.edu.ifsp.scl.sdm.pa2.todolistarq.controller.ListaTarefasController
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.databinding.FragmentListaTarefasBinding
-import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.database.ToDoListArqDatabase
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.model.entity.Tarefa
-import br.edu.ifsp.scl.sdm.pa2.todolistarq.presenter.TarefaPresenter
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.ACAO_TAREFA_EXTRA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.CONSULTA
 import br.edu.ifsp.scl.sdm.pa2.todolistarq.view.BaseFragment.Constantes.TAREFA_EXTRA
@@ -32,6 +32,11 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
     //private lateinit var listaTarefasController: ListaTarefasController
     //private lateinit var listaTarefasController: TarefaPresenter
     private lateinit var tarefaViewModel: TarefaViewModel
+
+    companion object {
+        val ACTION_BUSCAR = "ACTION_BUSCAR"
+        val EXTRA_BUSCAR = "BUSCAR"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,6 +130,29 @@ class ListaTarefasFragment: BaseFragment(), OnTarefaClickListener {
             replace(R.id.principalFcv, tarefaFragment)
         }
     }
+
+    private val receiveBuscarTarefasBr: BroadcastReceiver by lazy {
+        object: BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val bundle = intent?.extras
+                val lista = bundle?.getParcelableArray(EXTRA_BUSCAR)
+                val listaTarefas: MutableList<Tarefa> = mutableListOf()
+                lista?.forEach { item ->
+                    listaTarefas.add(item as Tarefa)
+                }
+
+                atualizarListaTarefas(listaTarefas)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().registerReceiver(receiveBuscarTarefasBr, IntentFilter(
+            ACTION_BUSCAR)
+        )
+    }
+
     override fun atualizarListaTarefas(listaTarefas: MutableList<Tarefa>){
         tarefasList.clear()
         tarefasList.addAll(listaTarefas)
